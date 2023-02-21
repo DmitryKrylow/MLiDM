@@ -1,24 +1,15 @@
-function getData(forms)
-{
-   const fData = new FormData(forms)
-   console.log(fData);
-   console.log(fData.get('mas1'));
-   console.log(fData.get('mas2'));
-
-   return false
-}
 /**
- * Валдация пар
+ * Валидация пар
  */
 function validatePairs(element)
 {
     let el1 = element.split(",")[0]
     let el2 = element.split(',')[1]
     let reg = new RegExp("[0-9]");
-    return reg.test(el1) && reg.test(el2) && (el1 != undefined && el2 != undefined)
+    return reg.test(el1) && reg.test(el2) && (el1 !== undefined && el2 !== undefined)
 }
 /**
- * Валдация множетсва
+ * Валидация множетсва
  */
 function validateSet(element)
 {
@@ -93,6 +84,21 @@ function isSymmetry(){
     }
     return symmetry;
 }
+/**
+ * Проверка на кососимметричность
+ * @return boolean
+ */
+function isAntiSymmetry(){
+    let antiSymmetry = true;
+    for(let i = 0; i < table.length; i++){
+        for(let j = 0; j < table[i].length; j++){
+            if((table[i][j] && !table[j][i] && i !== j)){
+                antiSymmetry = false;
+            }
+        }
+    }
+    return antiSymmetry;
+}
 
 /**
  * Проверка на транзитивность
@@ -117,33 +123,34 @@ function isTransitivity(){
  */
 function main()
 {
-    let mas1 = document.getElementById("pairs").value
-    let mas2 = document.getElementById("versh").value
+    let mas1 = document.getElementById("versh").value
+    let mas2 = document.getElementById("pairs").value
     let strError = "";
     mas1 = mas1.split(" ")
     mas2 = mas2.split(" ")
     for(let i=0; i<mas1.length; i++)
     {
-        if(!validatePairs(mas1[i])) {
-            console.log("Ошибка в " + (i + 1) + " элементе")
+        if(!validateSet(mas1[i])) {
             strError += "Ошибка в " + (i + 1) + " элементе первого массива \n"
         }
     }
     for(let i=0; i<mas2.length; i++)
     {
-        if(!validateSet(mas2[i])) {
-            console.log("Ошибка в " + (i + 1) + " элементе")
-            strError += "Ошибка в " + (i + 1) + " элементе первого массива \n"
+        if(!validatePairs(mas2[i])) {
+            strError += "Ошибка в " + (i + 1) + " элементе второго массива \n"
         }
     }
+    let resStr;
     if(strError === "")
     {
-        versh = new Set(mas2)
-        createTable(mas1)
-        console.log(isReflex())
-        console.log(isSymmetry())
-        console.log(isTransitivity())
-        document.getElementById('result').innerHTML = "Результат рассчета:<br>"
+        versh = new Set(mas1)
+        createTable(mas2)
+        resStr = isReflex() ? "рефлексивная<br>" : "не рефлексивная<br>";
+        resStr += isSymmetry() ? "симместричная<br>" : "не симместричная<br>"
+        resStr += isTransitivity() ? "транзитивная<br>" : "не транзитивная<br>"
+        resStr += isAntiSymmetry() ? "кососимметричная<br>" : "не кососимметричная<br>"
+        document.getElementById('result').innerHTML = "Результат рассчета:<br>" + resStr;
+
     }
     else {
         document.getElementById('result').innerHTML = strError
